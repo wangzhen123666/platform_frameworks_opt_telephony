@@ -125,6 +125,15 @@ public class PhoneFactory {
 
                 sPhoneNotifier = new DefaultPhoneNotifier();
 
+                // Get preferred network mode
+                int preferredNetworkMode = RILConstants.PREFERRED_NETWORK_MODE;
+                if (TelephonyManager.getLteOnCdmaModeStatic() == PhoneConstants.LTE_ON_CDMA_TRUE) {
+                    preferredNetworkMode = Phone.NT_MODE_GLOBAL;
+                }
+                if (TelephonyManager.getLteOnGsmModeStatic() != 0) {
+                    preferredNetworkMode = Phone.NT_MODE_LTE_GSM_WCDMA;
+                }
+
                 int cdmaSubscription = CdmaSubscriptionSourceManager.getDefault(context);
                 Rlog.i(LOG_TAG, "Cdma Subscription set to " + cdmaSubscription);
 
@@ -148,7 +157,7 @@ public class PhoneFactory {
                     } catch (SettingNotFoundException snfe) {
                         Rlog.e(LOG_TAG, "Settings Exception Reading Value At Index for"+
                                " Settings.Global.PREFERRED_NETWORK_MODE");
-                        networkModes[i] = RILConstants.PREFERRED_NETWORK_MODE;
+                        networkModes[i] = preferredNetworkMode;
                     }
                     Rlog.i(LOG_TAG, "Network Mode set to " + Integer.toString(networkModes[i]));
                     // Use reflection to construct the RIL class (defaults to RIL)
