@@ -96,7 +96,6 @@ public class DcSwitchStateMachine extends StateMachine {
                     }
 
                     PhoneBase pb = (PhoneBase)((PhoneProxy)mPhone).getActivePhone();
-                    pb.mCi.setDataAllowed(true, null);
                     boolean isPrimarySubFeatureEnable =
                             SystemProperties.getBoolean("persist.radio.primarycard", false);
                     int subId = pb.getSubId();
@@ -109,8 +108,7 @@ public class DcSwitchStateMachine extends StateMachine {
                         SubscriptionController subscriptionController
                                 = SubscriptionController.getInstance();
 
-                        //FIXME: DctController runtime exception, Revert this later
-                        //subscriptionController.setDefaultDataSubId(subId);
+                        subscriptionController.setDefaultDataSubId(subId);
                     }
 
                     mAc.replyToMessage(msg, DcSwitchAsyncChannel.RSP_CONNECT,
@@ -284,9 +282,7 @@ public class DcSwitchStateMachine extends StateMachine {
         @Override
         public void enter() {
             if (DBG) log("DetachingState: enter");
-            PhoneBase pb = (PhoneBase)((PhoneProxy)mPhone).getActivePhone();
-            pb.mCi.setDataAllowed(false, obtainMessage(
-                    DcSwitchAsyncChannel.EVENT_DATA_DETACHED));
+            transitionTo(mIdleState);
         }
 
         @Override
