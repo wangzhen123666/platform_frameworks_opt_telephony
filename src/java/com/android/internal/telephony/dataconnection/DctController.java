@@ -738,16 +738,18 @@ public class DctController extends Handler {
                                  mSubController.getCurrentDds());
                         mPhones[prefPhoneId].unregisterForAllDataDisconnected(this);
                     }
-                    Message allowedDataDone = Message.obtain(this,
-                            EVENT_SET_DATA_ALLOW_TRUE_DONE, s);
-                    Phone phone = mPhones[phoneId].getActivePhone();
 
-                    informDefaultDdsToPropServ(phoneId);
+                    if (phoneId >= 0) {
+                        Message allowedDataDone = Message.obtain(this,
+                                EVENT_SET_DATA_ALLOW_TRUE_DONE, s);
+                        Phone phone = mPhones[phoneId].getActivePhone();
 
-                    DcTrackerBase dcTracker =((PhoneBase)phone).mDcTracker;
-                    dcTracker.setDataAllowed(true, allowedDataDone);
+                        informDefaultDdsToPropServ(phoneId);
 
-                   break;
+                        DcTrackerBase dcTracker =((PhoneBase)phone).mDcTracker;
+                        dcTracker.setDataAllowed(true, allowedDataDone);
+                    }
+                    break;
                 }
 
                 case EVENT_DELAYED_RETRY: {
