@@ -70,4 +70,19 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <string name="data_conn_status_title"></string>
     <string name="user_authentication_failed"></string>
     <string name="service_not_subscribed"></string>
+    
+        <!-- Whether doze should invert colors for notifications. If the RRO theme causes
+    the NORMAL notification background to be dark and the text to be light, this boolean
+    needs to be set to false, to prevent the doze notifications from being light -->
+    <bool name="config_invert_colors_on_doze">true</bool>
+
+    <!--The locatiotion of .jar file which has the extended implementation
+         of telephony base classes.-->
+    <string name="telephony_plugin_lib_path" translatable="false">/system/framework/qti-telephony-common.jar</string>
+
+    <!--The .jar file name which has the extended implementation
+     of telephony base classes.-->
+    <string name="telephony_plugin_jar_name" translatable="false"></string>
+    <!--Fully qualified class name of telephony extended plugin.-->
+    <string name="telephony_plugin_class_name" translatable="false"></string>   
 </resources>
