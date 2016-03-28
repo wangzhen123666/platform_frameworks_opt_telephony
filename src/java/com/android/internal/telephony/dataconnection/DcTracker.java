@@ -1217,6 +1217,10 @@ public class DcTracker extends DcTrackerBase {
     private ApnSetting makeApnSetting(Cursor cursor) {
         String[] types = parseTypes(
                 cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Carriers.TYPE)));
+        int auth_type = cursor.getInt(cursor.getColumnIndexOrThrow(Telephony.Carriers.AUTH_TYPE));
+        if (auth_type == -1) {
+            auth_type = 0;
+        }
         ApnSetting apn = new ApnSetting(
                 cursor.getInt(cursor.getColumnIndexOrThrow(Telephony.Carriers._ID)),
                 cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Carriers.NUMERIC)),
@@ -1235,7 +1239,7 @@ public class DcTracker extends DcTrackerBase {
                 cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Carriers.MMSPORT)),
                 cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Carriers.USER)),
                 cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Carriers.PASSWORD)),
-                cursor.getInt(cursor.getColumnIndexOrThrow(Telephony.Carriers.AUTH_TYPE)),
+                auth_type,
                 types,
                 cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Carriers.PROTOCOL)),
                 cursor.getString(cursor.getColumnIndexOrThrow(
@@ -1278,7 +1282,14 @@ public class DcTracker extends DcTrackerBase {
             } while (cursor.moveToNext());
         }
 
-        ArrayList<ApnSetting> result = mvnoApns.isEmpty() ? mnoApns : mvnoApns;
+        ArrayList<ApnSetting> result;
+        if (mvnoApns.isEmpty()) {
+            result = mnoApns;
+            // mMvnoMatched = false; - not needed as cleared in createAllApnList
+        } else {
+            result = mvnoApns;
+            mMvnoMatched = true;
+        }
         if (DBG) log("createApnList: X result=" + result);
         return result;
     }
@@ -2395,7 +2406,8 @@ public class DcTracker extends DcTrackerBase {
      * Based on the operator numeric, create a list for all possible
      * Data Connections and setup the preferredApn.
      */
-    protected void createAllApnList() {
+    private void createAllApnList() {
+        mMvnoMatched = false;
         mAllApnSettings = new ArrayList<ApnSetting>();
         String operator = getOperatorNumeric();
         if (operator != null && !operator.isEmpty()) {
